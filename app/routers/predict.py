@@ -15,6 +15,7 @@ from app.services.classifier import (
     get_classifier,
     strip_data_url_prefix,
 )
+from app.services.concept_utils import build_predict_concepts
 
 logger = logging.getLogger(__name__)
 
@@ -84,8 +85,14 @@ async def predict(
             detail="Inference failed",
         ) from exc
 
+    primary, filtered = build_predict_concepts(
+        concepts,
+        min_confidence=settings.min_confidence,
+    )
+
     return PredictResponse(
-        concepts=concepts,
+        primaryConcept=primary,
+        concepts=filtered,
         model=classifier.model_id,
         inferenceMs=inference_ms,
     )

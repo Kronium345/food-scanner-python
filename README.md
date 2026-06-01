@@ -61,14 +61,15 @@ No auth. Returns `200` when the model is loaded, `503` while loading or on load 
 
 ```json
 {
-  "concepts": [
-    { "name": "pizza", "confidence": 0.94 },
-    { "name": "cheeseburger", "confidence": 0.03 }
-  ],
+  "primaryConcept": { "name": "pizza", "confidence": 0.94 },
+  "concepts": [{ "name": "pizza", "confidence": 0.94 }],
   "model": "onnx-community/swin-finetuned-food101-ONNX",
   "inferenceMs": 420
 }
 ```
+
+- **`primaryConcept`**: always the model’s top guess (use this for meal nutrition in Node).
+- **`concepts`**: alternates with confidence ≥ `MIN_CONFIDENCE` (default `0.15`); weak hits like 3% “donuts” are omitted.
 
 **Errors:** JSON `{ "detail": "..." }` — `400`, `401`, `413`, `422`, `500`, `503`.
 
@@ -78,8 +79,8 @@ OpenAPI docs: `/docs` when `ENABLE_DOCS=true`.
 
 ## Accuracy limitations
 
-- Food-101 labels are **dish-level** (~101 types: pizza, sushi, steak), not ingredients or brands.
-- Node's `foodKeywords` filter may need relaxation when switching from Clarifai — this service returns honest top-K; Node owns business filtering.
+- Food-101 labels are **dish-level** (~101 types: pizza, sushi, `chicken wings`), not generic ingredients (packaged “chicken” may misclassify as an unrelated dish).
+- Vision can be wrong with high confidence — Node must **not sum nutrition across all alternates** (see `NODE_INTEGRATION_PROMPT.md`).
 - USDA mapping quality depends on label strings (e.g. `chicken curry` from `chicken_curry`).
 
 ---
@@ -151,7 +152,8 @@ MODEL_ID=nateraw/food
 | `MODEL_ID` | no | `onnx-community/swin-finetuned-food101-ONNX` | Hugging Face repo |
 | `ONNX_MODEL_FILE` | no | `onnx/model_int8.onnx` | Quantized ONNX for Starter RAM; use `onnx/model.onnx` on larger instances |
 | `PORT` | no | `8000` | HTTP port |
-| `TOP_K` | no | `5` | Max predictions (1–10) |
+| `TOP_K` | no | `5` | Max predictions from model (1–10) |
+| `MIN_CONFIDENCE` | no | `0.15` | Min score for items in `concepts` (not applied to `primaryConcept`) |
 | `MAX_BASE64_CHARS` | no | `900000` | Aligns with Node image limit |
 | `INFERENCE_TIMEOUT_SEC` | no | `55` | Per-request inference timeout |
 | `LOG_LEVEL` | no | `info` | Logging level |

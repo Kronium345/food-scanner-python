@@ -73,9 +73,10 @@ def test_predict_success(
     body = response.json()
     assert body["model"] == settings.model_id
     assert body["inferenceMs"] == 42
-    assert len(body["concepts"]) >= 1
+    assert body["primaryConcept"]["name"] == "pizza"
+    assert body["primaryConcept"]["confidence"] > 0.5
+    assert len(body["concepts"]) == 1
     assert body["concepts"][0]["name"] == "pizza"
-    assert body["concepts"][0]["confidence"] > 0.5
 
 
 def test_predict_accepts_data_url_prefix(

@@ -15,6 +15,9 @@ class Concept(BaseModel):
 
 
 class PredictResponse(BaseModel):
+    """Vision result for Node: use primaryConcept for meal totals; concepts are filtered alternates."""
+
+    primary_concept: Concept | None = Field(None, alias="primaryConcept")
     concepts: list[Concept]
     model: str
     inference_ms: int = Field(..., alias="inferenceMs")
