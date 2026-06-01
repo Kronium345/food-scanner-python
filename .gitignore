@@ -43,15 +43,15 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 
-# Model cache (local dev)
+# Model cache / downloaded weights (do not ignore app/models/ Pydantic schemas)
 .cache/
-models/
 hf_cache/
+/ml_models/
 
 # OS
 .DS_Store
 Thumbs.db
 
-# .env files
-.env*
-.env.example*
+# Secrets (keep .env.example committed for documentation)
+.env
+.env.local
