@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: oq-food-vision
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: FOOD_VISION_API_KEY
+        sync: false
+      - key: INFERENCE_BACKEND
+        value: onnx
+      - key: MODEL_ID
+        value: onnx-community/swin-finetuned-food101-ONNX
+      - key: ONNX_MODEL_FILE
+        value: onnx/model.onnx
+      - key: TOP_K
+        value: "5"
+      - key: MAX_BASE64_CHARS
+        value: "900000"
+      - key: INFERENCE_TIMEOUT_SEC
+        value: "55"
+      - key: LOG_LEVEL
+        value: info
+      - key: ENABLE_DOCS
+        value: "false"
+      - key: HF_HOME
+        value: /opt/render/.cache/huggingface
+      - key: TRANSFORMERS_CACHE
+        value: /opt/render/.cache/huggingface
