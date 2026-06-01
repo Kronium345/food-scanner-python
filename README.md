@@ -149,7 +149,7 @@ MODEL_ID=nateraw/food
 | `FOOD_VISION_API_KEY` | yes | — | Shared secret with Node API |
 | `INFERENCE_BACKEND` | no | `onnx` | `onnx` or `torch` |
 | `MODEL_ID` | no | `onnx-community/swin-finetuned-food101-ONNX` | Hugging Face repo |
-| `ONNX_MODEL_FILE` | no | `onnx/model.onnx` | ONNX file path in repo |
+| `ONNX_MODEL_FILE` | no | `onnx/model_int8.onnx` | Quantized ONNX for Starter RAM; use `onnx/model.onnx` on larger instances |
 | `PORT` | no | `8000` | HTTP port |
 | `TOP_K` | no | `5` | Max predictions (1–10) |
 | `MAX_BASE64_CHARS` | no | `900000` | Aligns with Node image limit |
@@ -162,6 +162,8 @@ MODEL_ID=nateraw/food
 
 ## Docker
 
+The image **downloads the ONNX weights at build time** (see `scripts/download_onnx_model.py`) so Render startup does not spike RAM with download + load together.
+
 ```bash
 docker build -t oq-food-vision .
 docker run --rm -p 8000:8000 \
@@ -169,13 +171,13 @@ docker run --rm -p 8000:8000 \
   oq-food-vision
 ```
 
-Uses Python 3.11 and the ONNX backend by default.
+Uses Python 3.11, quantized ONNX (`model_int8.onnx`), and the ONNX backend by default.
 
 ---
 
 ## Deploy on Render
 
-1. Create a **Python web service** (Starter plan, ~512MB RAM is enough for ONNX).
+1. Create a **Python web service** (Starter plan; use `ONNX_MODEL_FILE=onnx/model_int8.onnx`).
 2. Set `FOOD_VISION_API_KEY` in the dashboard.
 3. Use `render.yaml` or set `INFERENCE_BACKEND=onnx` and the model env vars from `.env.example`.
 4. Health check: `/health` (liveness). Use `/ready` before routing traffic.

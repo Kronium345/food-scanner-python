@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     # onnx: lightweight CPU inference (recommended). torch: legacy PyTorch/transformers.
     inference_backend: Literal["onnx", "torch"] = "onnx"
     model_id: str = "onnx-community/swin-finetuned-food101-ONNX"
-    onnx_model_file: str = "onnx/model.onnx"
+    onnx_model_file: str = "onnx/model_int8.onnx"
     top_k: int = Field(default=5, ge=1, le=10)
     max_base64_chars: int = Field(default=900_000, ge=1)
     inference_timeout_sec: float = Field(default=55.0, gt=0)

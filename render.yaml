@@ -14,7 +14,7 @@ services:
       - key: MODEL_ID
         value: onnx-community/swin-finetuned-food101-ONNX
       - key: ONNX_MODEL_FILE
-        value: onnx/model.onnx
+        value: onnx/model_int8.onnx
       - key: TOP_K
         value: "5"
       - key: MAX_BASE64_CHARS
